@@ -2,8 +2,11 @@ import os
 #from dotenv import load_dotenv
 #from matplotlib.cbook import print_cycles # In order to get the api key from the .env file
 #load_dotenv()
+#pip uninstall telebot
+#pip uninstall pytelegrambotapi
 import telebot
-from telebot import types
+#from telebot import types
+from telebot.types import *
 from emojiflags.lookup import lookup
 from datetime import datetime
 from bs4 import BeautifulSoup as bs
