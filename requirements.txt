@@ -1,7 +1,4 @@
 matplotlib
-sys
-subprocess
-pytelegrambotapi==2.2.3
 telebot
 emojiflags
 bs4
