@@ -2,10 +2,11 @@ import os
 #from dotenv import load_dotenv
 #from matplotlib.cbook import print_cycles # In order to get the api key from the .env file
 #load_dotenv()
-import pip
-pip uninstall telebot
-pip uninstall pytelegrambotapi
-pip install pyTelegramBotApi
+import sys
+import suprocess
+subprocess.check_call([sys.executable, '-m', 'pip', 'uninstall', 'telebot'])
+subprocess.check_call([sys.executable, '-m', 'pip', 'uninstall', 'pytelegrambotapi'])
+subprocess.check_call([sys.executable, '-m', 'pip', 'install', 'pytelegrambotapi'])
 import telebot
 from telebot import types
 from emojiflags.lookup import lookup
