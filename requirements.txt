@@ -12,4 +12,3 @@ textblob
 tweepy
 nltk
 langdetect
-
