@@ -10,5 +10,5 @@ pytube
 textblob
 tweepy
 nltk
-langedetect
+langdetect
 
