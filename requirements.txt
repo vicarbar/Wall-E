@@ -1,0 +1,14 @@
+matplotlib
+telebot
+emojiflags
+bs4
+requests
+pandas
+numpy
+qrcode
+pytube
+textblob
+tweepy
+nltk
+langedetect
+
