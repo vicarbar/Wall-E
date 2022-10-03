@@ -1,7 +1,7 @@
 import os
-from dotenv import load_dotenv
-from matplotlib.cbook import print_cycles # In order to get the api key from the .env file
-load_dotenv()
+#from dotenv import load_dotenv
+#from matplotlib.cbook import print_cycles # In order to get the api key from the .env file
+#load_dotenv()
 import telebot
 from telebot import types
 from emojiflags.lookup import lookup
