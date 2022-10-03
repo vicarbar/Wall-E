@@ -1,5 +1,5 @@
 matplotlib
-telebot
+pytelegrambotapi==3.6.6
 emojiflags
 bs4
 requests
