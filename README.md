@@ -1,2 +1,2 @@
 # Wall-E
-Telegram bot deployed with pytohn 3.9 for diverse functionalities. The command /help (or /ayuda) shows the insights of the different posibilities that Wall-E allows to the user.
+Telegram bot deployed with pytohn 3.9 for diverse functionalities. The command /help (or /ayuda) shows the insights of the different posibilities that Wall-E allows to the user. Currently most of the commands provide information relative to the stock markets, but also other significant economic aspects can be shown such as the spanish inflation or the current euribor value. In addition to this, information on the listings of local cinemas in the author's city can also be consulted.
