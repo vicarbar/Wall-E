@@ -24,7 +24,6 @@ from nltk.sentiment.vader import SentimentIntensityAnalyzer
 
 
 
-
 # Bot implementation
 API_TOKEN = os.getenv("API_TOKEN")
 bot = telebot.TeleBot(API_TOKEN)
@@ -559,6 +558,7 @@ def get_twitter_sentiment_analysis(message):
 def help(message):
     mes = "*Bienvenido a la ayuda de Wall-E! Aquí se muestran los distintos comandos e interacciones permitidas con el bot.*\n\n"
     mes = mes + " - */help /ayuda:* mensaje de ayuda sobre los comandos de Wall-E.\n"
+    mes = mes + " - */autor /author:* mensaje que informa sobre el autor del proyecto y da sus redes de contacto.\n"
     mes = mes + " - */hola:* mensaje de saludo en español.\n"
     mes = mes + " - */hello:* mensaje de saludo en inglés.\n"
     mes = mes + " - */bitcoin /btc:* mensaje con el precio del bitcoin.\n"
@@ -575,7 +575,7 @@ def help(message):
     mes = mes + " - */losers /bajan:* mensaje con los activos que más están bajando o perdiendo porcentualmente.\n"
     mes = mes + " - */ortega:* mensaje con la cartelera del cine Ortega de Palencia (España).\n"
     mes = mes + " - */avenida:* mensaje con la cartelera del cine Avenida de Palencia (España).\n"
-    mes = mes + " - */cines:* mensaje con la cartelera tanto del cine Ortega como del cine Avenida de Palencia (España).\n"
+    mes = mes + " - */cines /cartelera:* mensaje con la cartelera tanto del cine Ortega como del cine Avenida de Palencia (España).\n"
     mes = mes + " - */news:* despliega un menú de botones para elegir la temática de las noticias que se quieren buscar.\n"
     mes = mes + " - *qr <<url>>*: genera un código qr en forma de imagen enlazando con la url indicada.\n"
     mes = mes + " - *yt <<url>>* or *youtube <<url>>*: descarga un vídeo de Youtube en formato .mp4 dada su url.\n"
@@ -733,11 +733,21 @@ def get_avenida_billboard(message):
     
     
 # Ortega cinema (Palencia, Spain) billboard and Avenida cinema (Palencia, Spain) billboard
-@bot.message_handler(commands = ["cine", "cines", "Cine", "Cines"])
+@bot.message_handler(commands = ["cine", "cines", "Cine", "Cines", "cartelera"])
 def get_palencia_billboard(message):
     mes = get_cine("https://www.ecartelera.com/cines/420,0,1.html")
     bot.send_message(message.chat.id, mes, parse_mode = 'Markdown')
     mes = get_cine("https://www.ecartelera.com/cines/419,0,1.html")
+    bot.send_message(message.chat.id, mes, parse_mode = 'Markdown')
+    
+
+# Information of the author of the project
+@bot.message_handler(commands = ["autor", "author"])
+def get_autor(message):
+    mes = "El autor de este proyecto es *Víctor Arranz*, español natural de Palencia licenciado en Ingeniería Informática"
+    mes += " Estadística por la Universidad de Valladolid. Con dedicación de desarrollador *full stack* y de *data scientist*, mi sitio web"
+    mes += " personal es https://vicarbar.github.io/ \nMis redes de contacto:\n *LinkedIn*: linkedin.com/in/victor-arranz-barcenilla-956002151\n"
+    mes += " *Github*: https://github.com/vicarbar"
     bot.send_message(message.chat.id, mes, parse_mode = 'Markdown')
     
     
