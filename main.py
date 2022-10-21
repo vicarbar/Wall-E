@@ -334,11 +334,6 @@ def get_yt(message):
     # ---------------------
     # Rename the video :
     # Look for the modified times of the files in the Wall-E directory
-    aux = []
-    for i in range(len(os.listdir())):
-        if re.findall(".*\\.mp4", os.listdir()[i]):
-            aux.append(os.listdir()[i])
-    print(aux)
     tiempos = []
     for i in aux:
         tiempos.append(os.path.getmtime(i))
@@ -797,7 +792,7 @@ def reply(message):
     # yt video download reply
     elif bool(re.match("[\s]*([yY][tT]|[yY]outube)[\s]+.+", message.text)): # messages of the form yt url (or youtube url...)
         get_yt(message.text)
-        bot.send_video(message.chat.id, video = open("video.mp4", "rb"))
+        bot.send_document(message.chat.id, document = open("video.mp4", "rb"))
         
         
     # Sentiment analysis of a topic based on twitter messages
