@@ -330,6 +330,7 @@ def get_yt(message):
     # Most posible video resolution
     video = yt.streams.get_highest_resolution()
     video.download()
+    print(video.get_file_path())
     # ---------------------
     # Rename the video :
     # Look for the modified times of the files in the Wall-E directory
