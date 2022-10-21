@@ -335,10 +335,10 @@ def get_yt(message):
     # Rename the video :
     # Look for the modified times of the files in the Wall-E directory
     tiempos = []
-    for i in aux:
+    for i in os.listdir():
         tiempos.append(os.path.getmtime(i))
     # Find the last modified file (which is the newly created mp4 video file) and modify it's name
-    print(aux[np.argmax(tiempos)])
+    print(os.listdir()[np.argmax(tiempos)])
     os.rename(aux[np.argmax(tiempos)], "video.mp4")
     
     
