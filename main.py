@@ -331,7 +331,6 @@ def get_yt(message):
     video = yt.streams.get_highest_resolution()
     video.download()
     print(video.get_file_path())
-    print(os.listdir())
     # ---------------------
     # Rename the video :
     # Look for the modified times of the files in the Wall-E directory
@@ -339,10 +338,12 @@ def get_yt(message):
     for i in range(len(os.listdir())):
         if re.findall(".*\\.mp4", os.listdir()[i]):
             aux.append(os.listdir()[i])
+    print(aux)
     tiempos = []
     for i in aux:
         tiempos.append(os.path.getmtime(i))
     # Find the last modified file (which is the newly created mp4 video file) and modify it's name
+    print(aux[np.argmax(tiempos)])
     os.rename(aux[np.argmax(tiempos)], "video.mp4")
     
     
