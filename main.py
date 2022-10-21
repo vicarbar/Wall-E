@@ -331,6 +331,7 @@ def get_yt(message):
     video = yt.streams.get_highest_resolution()
     video.download()
     print(video.get_file_path())
+    print(os.listdir())
     # ---------------------
     # Rename the video :
     # Look for the modified times of the files in the Wall-E directory
