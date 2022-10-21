@@ -330,7 +330,6 @@ def get_yt(message):
     # Most posible video resolution
     video = yt.streams.get_highest_resolution()
     video.download()
-    print(video.get_file_path())
     # ---------------------
     # Rename the video :
     # Look for the modified times of the files in the Wall-E directory
@@ -338,7 +337,6 @@ def get_yt(message):
     for i in os.listdir():
         tiempos.append(os.path.getmtime(i))
     # Find the last modified file (which is the newly created mp4 video file) and modify it's name
-    print(os.listdir()[np.argmax(tiempos)])
     os.rename(os.listdir()[np.argmax(tiempos)], "video.mp4")
     
     
@@ -792,7 +790,8 @@ def reply(message):
     # yt video download reply
     elif bool(re.match("[\s]*([yY][tT]|[yY]outube)[\s]+.+", message.text)): # messages of the form yt url (or youtube url...)
         get_yt(message.text)
-        bot.send_document(message.chat.id, document = open("video.mp4", "rb"))
+        with data_file("video.mp4").open("rb") as v:
+            bot.send_video(message.chat.id, video = v)
         
         
     # Sentiment analysis of a topic based on twitter messages
