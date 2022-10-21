@@ -339,7 +339,7 @@ def get_yt(message):
         tiempos.append(os.path.getmtime(i))
     # Find the last modified file (which is the newly created mp4 video file) and modify it's name
     print(os.listdir()[np.argmax(tiempos)])
-    os.rename(aux[np.argmax(tiempos)], "video.mp4")
+    os.rename(os.listdir()[np.argmax(tiempos)], "video.mp4")
     
     
     
