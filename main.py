@@ -3,7 +3,7 @@ import os
 #from matplotlib.cbook import print_cycles # In order to get the api key from the .env file
 #load_dotenv()
 import telebot
-#from telebot import types
+from telebot import types
 from emojiflags.lookup import lookup
 from datetime import datetime
 from bs4 import BeautifulSoup as bs
