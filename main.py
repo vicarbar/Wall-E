@@ -790,7 +790,7 @@ def reply(message):
     # yt video download reply
     elif bool(re.match("[\s]*([yY][tT]|[yY]outube)[\s]+.+", message.text)): # messages of the form yt url (or youtube url...)
         get_yt(message.text)
-        bot.send_video(message.chat.id, "video.mp4")
+        bot.send_video(message.chat.id, video = open('video.mp4', 'rb'))
         
         
     # Sentiment analysis of a topic based on twitter messages
