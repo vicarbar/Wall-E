@@ -21,11 +21,16 @@ from nltk.sentiment.vader import SentimentIntensityAnalyzer
 from langdetect import detect
 from nltk.stem import SnowballStemmer
 from nltk.sentiment.vader import SentimentIntensityAnalyzer
+from utils.constants import ARBITROS
+
 
 
 
 # Bot implementation
 API_TOKEN = os.getenv("API_TOKEN")
+if API_TOKEN is None:
+    raise ValueError("No se encontró el token del bot. Por favor, configura la variable de entorno API_TOKEN.")
+
 bot = telebot.TeleBot(API_TOKEN)
 
 # Twitter API tokens
@@ -312,7 +317,25 @@ def get_top_losers():
     return output
 
 
+# Get the stats of a selected referee of the Liga EA Sports 2023-2024
+def get_ref_stats(arbitro):
+    try:
+        url = 'https://www.futbolfantasy.com/laliga/arbitros'
+        network = requests.get(url, headers = {"User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.110 Safari/537.36"})
+    except:
+        NetworkError()
 
+    # Scraping
+    soup = bs(network.text, "html.parser")
+    div = soup.find("div", {"class": "table-responsive"})
+    tabla = list(soup.find("div", {"class":"table-responsive"}).find_all("tr"))
+    for row in tabla:
+        if arbitro in row.get_text():
+            amarillas = float(row.get_text().split("\n")[10])
+            rojas = float(row.get_text().split("\n")[13])
+            total = round(amarillas + rojas, 2)
+            return(f"Estadísticas del árbitro *{arbitro}*\nAmarillas PP \U0001F7E1: {amarillas}\nRojas PP \U0001F534: {rojas}\n*Total:* {total}")
+    
 
 # Generate qr code for an specific url 
 def get_qr(message):
@@ -577,6 +600,7 @@ def help(message):
     mes = mes + " - */avenida:* mensaje con la cartelera del cine Avenida de Palencia (España).\n"
     mes = mes + " - */cines /cartelera:* mensaje con la cartelera tanto del cine Ortega como del cine Avenida de Palencia (España).\n"
     mes = mes + " - */news:* despliega un menú de botones para elegir la temática de las noticias que se quieren buscar.\n"
+    mes = mes + " - */arbitros:* despliega un menú de botonos para elegir el árbitro de la Liga EA Sports cuyas estadísticas se quieren consulrar.\n"
     mes = mes + " - *qr <<url>>*: genera un código qr en forma de imagen enlazando con la url indicada.\n"
     mes = mes + " - *yt <<url>>* or *youtube <<url>>*: descarga un vídeo de Youtube en formato .mp4 dada su url.\n"
     mes = mes + " - *sentiment <<word>>* or *sentimiento <<word>>*: realiza un análisis de sentimientos basado en los 100 tweets más relevantes de la última semana que contenga el término o términos indicados en <<word>>.\n\n"
@@ -752,7 +776,6 @@ def get_autor(message):
     
     
     
-    
 # Show the different options for the news thematics
 @bot.message_handler(commands = ["news"])
 def get_news(message):
@@ -771,6 +794,18 @@ def get_news(message):
     b12 = types.KeyboardButton('Audiovisual y medios')
     markup.add(b1, b2, b3, b4, b5, b6, b7, b8, b9, b10, b11, b12)
     bot.send_message(message.chat.id, "Elige la temática de las noticias:", reply_markup = markup)
+    
+
+# Show the spanish referees
+@bot.message_handler(commands = ["arbitros"])
+def get_refs(message):
+    markup = types.ReplyKeyboardMarkup(row_width=2, resize_keyboard=True, one_time_keyboard=True)
+
+    # Añadir botones al teclado de marcación
+    for nombre in ARBITROS:
+        boton = types.KeyboardButton(nombre)
+        markup.add(boton)
+    bot.send_message(message.chat.id, "Selecciona el árbitro:", reply_markup = markup)
 
 
     
@@ -825,6 +860,8 @@ def reply(message):
     elif message.text == "Audiovisual y medios":
         bot.send_message(message.chat.id, "https://es.finance.yahoo.com/industries/audiovisual-y-medios/")
         
+    if message.text in ARBITROS:
+        bot.send_message(message.chat.id, get_ref_stats(message.text), parse_mode = 'Markdown')
     
     # If there is no mes match the bot does not reply the user
     if mes != "":
