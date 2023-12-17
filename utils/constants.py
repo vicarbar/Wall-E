@@ -7,3 +7,5 @@ ARBITROS = [
     'Muñiz Ruiz', 'Ortiz Arias', 'Pulido Santana', 
     'Sánchez Martínez', 'Soto Grado'
 ]
+
+EQUIPOS = ["Alavés", "Almería", "Athletic Bilbao", "Atlético Madrid", "Barcelona", "Cádiz", "Celta Vigo", "Getafe", "Girona", "Granada", "Las Palmas", "Mallorca", "Osasuna", "Rayo Vallecano", "Real Betis", "Real Madrid", "Real Sociedad", "Sevilla", "Valencia", "Villarreal"]

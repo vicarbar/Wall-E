@@ -21,7 +21,7 @@ from nltk.sentiment.vader import SentimentIntensityAnalyzer
 from langdetect import detect
 from nltk.stem import SnowballStemmer
 from nltk.sentiment.vader import SentimentIntensityAnalyzer
-from utils.constants import ARBITROS
+from utils.constants import ARBITROS, EQUIPOS
 
 
 
@@ -334,7 +334,7 @@ def get_ref_stats(arbitro):
             amarillas = float(row.get_text().split("\n")[10])
             rojas = float(row.get_text().split("\n")[13])
             total = round(amarillas + rojas, 2)
-            return(f"Estadísticas del árbitro *{arbitro}*\nAmarillas PP \U0001F7E1: {amarillas}\nRojas PP \U0001F534: {rojas}\n*Total:* {total}")
+            return(f"Estadísticas del árbitro *{arbitro}*\nAmarillas PP \U0001F7E8: {amarillas}\nRojas PP \U0001F7E5: {rojas}\n*Total:* {total}")
     
 
 # Generate qr code for an specific url 
