@@ -1,0 +1,5 @@
+HELP_MESSAGE = " - */help /ayuda:* mensaje de ayuda sobre los comandos de Wall-E.\n"
+AUTOR_MESSAGE = " - */autor /author:* mensaje que informa sobre el autor del proyecto y da sus redes de contacto.\n"
+HOLA_MESSAGE = " - */hola:* mensaje de saludo en español.\n"
+HELLO_MESSAGE = " - */hello:* mensaje de saludo en inglés.\n"
+BITCOIN_MESSAGE = " - */bitcoin /btc:* mensaje con el precio del bitcoin.\n"

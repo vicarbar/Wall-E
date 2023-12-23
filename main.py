@@ -22,8 +22,11 @@ from langdetect import detect
 from nltk.stem import SnowballStemmer
 from nltk.sentiment.vader import SentimentIntensityAnalyzer
 from utils.constants import ARBITROS, EQUIPOS
+from exceptions.exceptions import StockNotExistsError, NetworkError, MatchNoValidError
 
 
+# State variables for the cards predictor tool
+chat_states = {}
 
 
 # Bot implementation
@@ -41,16 +44,6 @@ ACCESS_TOKEN_SECRET = os.getenv("ACCESS_TOKEN_SECRET")
 BEARER_TOKEN = os.getenv("BEARER_TOKEN")
 
 
-# Exceptions
-class StockNotExistsError(Exception):
-    pass
-
-class NetworkError(Exception):
-    pass
-
-
-
-    
 # Scrap Yahoo Finance Api Key in order to get the price and the porcentage of an active
 class Price:
     def __init__(self, symbol):
@@ -335,7 +328,35 @@ def get_ref_stats(arbitro):
             rojas = float(row.get_text().split("\n")[13])
             total = round(amarillas + rojas, 2)
             return(f"Estadísticas del árbitro *{arbitro}*\nAmarillas PP \U0001F7E8: {amarillas}\nRojas PP \U0001F7E5: {rojas}\n*Total:* {total}")
+        
+
+# Get the stats of a selected team of the Liga EA Sports 2023-2024
+def get_team_stats(team):
+    try:
+        url = 'https://espndeportes.espn.com/futbol/estadisticas/_/liga/ESP.1/vista/tarjetas'
+        network = requests.get(url, headers = {"User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.110 Safari/537.36"})
+    except:
+        NetworkError()
+
+    # Scraping
+    soup = bs(network.text, "html.parser")
+    tabla = list(soup.find("div", {"class": "Table__Scroller"}).find("tbody", {"class": "Table__TBODY"}).find_all("tr"))
+    for row in tabla:
+        if team in row.get_text():
+            partidos = float(str(row).split('class="tar">')[1].split('</span>')[0])
+            amarillas = float(str(row).split('class="tar">')[2].split('</span>')[0])
+            rojas = float(str(row).split('class="tar">')[3].split('</span>')[0])
+            tarjetas = amarillas + rojas
+            app = round(amarillas/partidos, 2)
+            rpp = round(rojas/partidos, 2)
+            tpp = round(tarjetas/partidos, 2)
+            return(f"Estadísticas del *{team}*\nAmarillas PP \U0001F7E8: {app}\nRojas PP \U0001F7E5: {rpp}\n*Total PP:* {tpp}")
+
+# Perform the cards prediction
+def get_pred_tarjetas(states_pred):
+    print("AQUI")
     
+
 
 # Generate qr code for an specific url 
 def get_qr(message):
@@ -600,7 +621,9 @@ def help(message):
     mes = mes + " - */avenida:* mensaje con la cartelera del cine Avenida de Palencia (España).\n"
     mes = mes + " - */cines /cartelera:* mensaje con la cartelera tanto del cine Ortega como del cine Avenida de Palencia (España).\n"
     mes = mes + " - */news:* despliega un menú de botones para elegir la temática de las noticias que se quieren buscar.\n"
-    mes = mes + " - */arbitros:* despliega un menú de botonos para elegir el árbitro de la Liga EA Sports cuyas estadísticas se quieren consulrar.\n"
+    mes = mes + " - */arbitros_tar:* despliega un menú de botones para elegir el árbitro de la Liga EA Sports cuyas estadísticas de tarjetas se quieren consultar.\n"
+    mes = mes + " - */equipos_tar:* despliega un menú de botones para elegir el equipo de la Liga EA Sports cuyas estadísticas de tarjetas se quieren consultar.\n"
+    mes = mes + " - */predictor_tar:* despliega la herramienta de predicción de tarjetas de partidos de la Liga EA Sports"
     mes = mes + " - *qr <<url>>*: genera un código qr en forma de imagen enlazando con la url indicada.\n"
     mes = mes + " - *yt <<url>>* or *youtube <<url>>*: descarga un vídeo de Youtube en formato .mp4 dada su url.\n"
     mes = mes + " - *sentiment <<word>>* or *sentimiento <<word>>*: realiza un análisis de sentimientos basado en los 100 tweets más relevantes de la última semana que contenga el término o términos indicados en <<word>>.\n\n"
@@ -797,17 +820,70 @@ def get_news(message):
     
 
 # Show the spanish referees
-@bot.message_handler(commands = ["arbitros"])
+@bot.message_handler(commands = ["arbitros_tar"])
 def get_refs(message):
     markup = types.ReplyKeyboardMarkup(row_width=2, resize_keyboard=True, one_time_keyboard=True)
 
     # Añadir botones al teclado de marcación
     for nombre in ARBITROS:
-        boton = types.KeyboardButton(nombre)
-        markup.add(boton)
+        markup.add(types.KeyboardButton(nombre))
     bot.send_message(message.chat.id, "Selecciona el árbitro:", reply_markup = markup)
 
 
+# Show the spanish teams
+@bot.message_handler(commands=["predictor_tar"])
+def start_pred_tar(message):
+    chat_id = message.chat.id
+    
+    markup = types.ReplyKeyboardMarkup(row_width=2, resize_keyboard=True, one_time_keyboard=True)
+    # Añadir botones para seleccionar el equipo local
+    for nombre in EQUIPOS:
+        markup.add(types.KeyboardButton(nombre))
+
+    bot.send_message(chat_id, "Selecciona el equipo LOCAL:", reply_markup=markup)
+    chat_states[chat_id] = {"estado": "esperando_equipo_local", "equipo_local": None, "equipo_visitante": None}
+
+
+        
+
+
+# Manejador para cuando se selecciona un equipo
+@bot.message_handler(func = lambda message: chat_states.get(message.chat.id, {}).get("estado") == "esperando_equipo_local")
+def equipo_local_seleccionado(message):
+    chat_id = message.chat.id
+    equipo_local = message.text
+    
+    markup = types.ReplyKeyboardMarkup(row_width=2, resize_keyboard=True, one_time_keyboard=True)    
+    
+    # Añadir botones para seleccionar el equipo visitante
+    for nombre in EQUIPOS:
+        markup.add(types.KeyboardButton(nombre))
+    
+    bot.send_message(chat_id, f"Equipo LOCAL seleccionado: {equipo_local}\nAhora selecciona el equipo VISITANTE.", reply_markup=markup)
+
+    chat_states[chat_id]["equipo_local"] = equipo_local
+    chat_states[chat_id]["estado"] = "esperando_equipo_visitante"
+
+
+    
+
+# Manejador para cuando se selecciona el segundo equipo
+@bot.message_handler(func = lambda message: chat_states.get(message.chat.id, {}).get("estado") == "esperando_equipo_visitante")
+def equipo_visitante_seleccionado(message):
+    chat_id = message.chat.id
+    equipo_visitante = message.text
+    
+    chat_states[chat_id]["equipo_visitante"] = equipo_visitante
+
+    bot.send_message(chat_id, f"Equipo VISITANTE seleccionado: {equipo_visitante}")
+    
+    if chat_states[chat_id]["equipo_local"] != chat_states[chat_id]["equipo_visitante"]:
+        get_pred_tarjetas(chat_states)
+    else:
+        MatchNoValidError()
+        
+
+    
     
 # Message that replies to the user
 @bot.message_handler()
@@ -862,6 +938,9 @@ def reply(message):
         
     if message.text in ARBITROS:
         bot.send_message(message.chat.id, get_ref_stats(message.text), parse_mode = 'Markdown')
+        
+    if message.text in EQUIPOS:
+        bot.send_message(message.chat.id, get_team_stats(message.text), parse_mode = 'Markdown')
     
     # If there is no mes match the bot does not reply the user
     if mes != "":
